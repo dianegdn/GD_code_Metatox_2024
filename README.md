@@ -56,7 +56,7 @@ Ce fichier EXCEL permet de créer les fichiers .txt présents dans les input/red
 2.2. Le code sherpa-model.ipynb : permet de prédire les concentrations de polluants atmosphériques dans l'air avec l'outil SHERPA en Python
 ---
 
-Le jupyter notebook sherpa-model.ipynb qui permet de produire les sorties par scénario d'intérêt
+Le jupyter notebook sherpa-model.ipynb permet de produire les sorties par scénario d'intérêt.
 
 
 
