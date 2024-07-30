@@ -14,8 +14,8 @@ Commission européenne, spécialement conçu pour l’aide à la conception et l
 Enfin, il s’agit d’évaluer l’impact sanitaire lié aux scénarios Ademe : cette quantification est effectuée selon l’approche d’évaluation quantitative 
 d’impact sanitaire (EQIS). Elle consiste dans un premier temps à évaluer les relations concentration-risque pour un polluant donné. 
 Les concentrations des polluants atmosphériques obtenues par SHERPA seront appliquées à des données de population spatialisées disponibles via l’INSEE 
-à l’échelle territoriale (IRIS, commune ou département). Les gains en termes de mortalité seront calculés en appliquant les relations concentrations-risque 
-établies (Pascal et al., 2013, Pascal et al., 2016, Adelaide et al., 2021) (partie 2.3.). 
+à l’échelle territoriale (IRIS, commune ou département) (partie 2.3). Les gains en termes de mortalité seront calculés en appliquant les relations concentrations-risque 
+établies (Pascal et al., 2013, Pascal et al., 2016, Adelaide et al., 2021) (partie 2.4.). 
 
 
 
