@@ -153,31 +153,30 @@ Les données utilisées sont les données de sortie du code code-pop.R et de la 
 •	moy_conc <- function(conc_points)
 - Pour le Simple Feature Collection conc_points, renvoie la moyenne sur le territoire national de la concentration conc mesurée
 
-•	grid <- function(conc_points, deg)
-- Pour le Simple Feature Collection conc_points et un degré deg, grid renvoie un Simple Feature Collection result dans lequel :
-- Les points de conc_points sont conservés et sont ajoutés des points supplémentaires espacés d'une distance deg
-- Les concentrations conc et delta_conc sont estimées pour les points ajoutés en interpolant les points de conc_points
-- Cette fonction permet donc d'obtenir un Simple Feature Collection où les concentrations sont mesurées à une échelle plus fine que celle calculée initialement par SHERPA
+•	coordo_ineris <- function(pol)
+- renvoie une liste de points en France et de concentrations mesurées par l'INERIS (cartothèque)
+  
+• correction <- function(conc_points, conc_ineris)
+- corrige le delta de concentration à partir de la cartothèque de l'INERIS en faisant un produit en croix
 
-•	graphe <- function(conc_interp_sf, conc_points)
-- Pour les deux Simple Feature Collection conc_interp_sf et conc_points, graphe trace une image dans laquelle :
-- Les valeurs conc de conc_interp_sf sont représentées en gradient de couleur
-- Les points de conc_points sont représentés en rouge
+• calculate_perc <- function(grille_combinee, donnees_exportees_transformed)
+- calculer le pourcentage d'intersection (nécessaire dans le fichier donnees_pourcents) entre la surface d'un IRIS et la surface de mesure de la concentration dans SHERPA
+
+• expo <- function(donnees_exportees_transformed, conc_corrigee, grille_combinee)
+- associer les moyennes de concentration à chaque IRIS (à partir du fichier données_pourcents) en pondérant les concentrations corrigées par les pourcentages pré-établis dans la fonction précédente
 
 •	export_data_shp <- function(donnees_shp, path_fichier_shp, title_shp)
 - Cette fonction permet d'exporter le Simple Collection Feature donnees_shp en shapefile situé au chemin path_fichier_shp et ayant pour titre title_shp
 
-•	exposition <- function(donnees_exportees, conc_interp_sf)
-- donnees_exportees est un Simple Collection Feature contenant une liste de polygones représentant les IRIS en France. il y a également d'autres colonnes, notamment iriscod qui attribue un code unique à chaque polygone
-- conc_interp_sf est un Simple Collection Feature contenant une liste de points et pour chaque point une valeur numérique conc et delta_conc
-- La fonction crée un Simple Feature Collection result identique à donnees_exportees avec deux colonnes vides conc et deltaconc
-- pour chaque iriscod, la fonction identifie tous les points de conc_interp_sf présents dans le polygone associé à iriscod
-- pour chaque iriscod, la fonction remplace la valeur conc et deltaconc par la moyenne de conc et delta_conc des points de conc_interp_sf qui sont dans le polygone
+• expo_ponderee_meanconc <- function(donnees_expo, popannee)
+- Fonction qui calcule l'exposition moyenne pondérée par la population
 
-•	mortalite_evitee_iris <- function(donnees_expo, pol)
-- Pour le polluant pol et l'exposition de chaque IRIS donnée par deltaconc dans le Simple Collection Feature donnees_expo, mortalite_evitee_iris calcule la mortalité évitée dans chaque IRIS associée à l'exposition au polluant pol
+•	mortalite_age <- function(donnees_merged, donnees_expo, annee, pol)
+- Pour le polluant pol et la mortalité évitée dans chaque IRIS associée à l'exposition au polluant pol présente dans la colonne mortpolannee, la fonction mortalite_age calcule la mortalité évitée associée à l'exposition au polluant pol, les années de vie gagnées, et renvoie un tableau avec les valeurs pour chaque âge
 
-•	mortalite_evitee_nat <- function(donnees_mixtes, annee, pol)
-- Pour le polluant pol et la mortalité évitée dans chaque IRIS associée à l'exposition au polluant pol présente dans la colonne mortpolannee, la fonction mortalite_evitee_nat réaggrège la mortalité à l'échelle nationale
+•	life_exp <- function(tab, annee)
+- Fonction qui calcule l'espérance de vie gagnée entre 2019 et l'année d'intérêt
+
+
 
 
