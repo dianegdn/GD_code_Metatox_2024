@@ -50,34 +50,134 @@ Le feuilleton air permet de prédire les émissions suivantes :
 
 Ce fichier EXCEL permet de créer les fichiers .txt présents dans les input/reduction_perc pour chaque scénario, nécessaires pour faire fonctionner l'outil SHERPA.
 
-2.2. part1-python : dossier qui permet de prédire les concentrations de polluants atmosphériques dans l'air avec l'outil SHERPA en Python
+
+
+
+2.2. Le code sherpa-model.ipynb : permet de prédire les concentrations de polluants atmosphériques dans l'air avec l'outil SHERPA en Python
 ---
 
-Contient :
-  - les entrées (input)
-  - les sorties (output)
-  - les différents modules du code de SHERPA (lire le readme spécifique)
-  - le jupyter notebook how_to_run_module1.ipynb qui permet de comprendre le fonctionnement du code du Module 1 pour l'utiliser dans sherpa-model.ipynb
-    Ce code est détaillé dans la partie 3.
-  - le jupyter notebook sherpa-model.ipynb qui permet de produire les sorties par scénario d'intérêt
-    
-2.3. part2-rstudio : dossier qui permet de calculer l'EQIS à partir des prédictions des concentrations données par SHERPA
+Le jupyter notebook sherpa-model.ipynb qui permet de produire les sorties par scénario d'intérêt
+
+
+
+
+2.3. Le code code-pop.R : permet de mettre en forme les données de population à partir des données INSEE
 --
 
-Contient :
-  - code-pop.R : code R qui permet de mettre en forme les données de population à partir des données INSEE.
-    Ce code est détaillé dans le README de la partie part2-rstudio.
-  - eqis-code.R : code R qui permet de calculer l'EQIS à partir des prédictions des concentrations données par SHERPA.
-    Ce code est détaillé dans le README de la partie part2-rstudio.
-  - rproject-eqis.Rproj : projet R pour l'EQIS
-  - data : dossier dans lequel se trouve les fichiers d'entrée
-    Contient :
-    * 0-raw-data : fichiers bruts trouvés sur Internet (lire le fichier Word pour obtenir les URL correspondants)
-      correspondent aux fichiers INSEE permettant d'avoir les contours des IRIS en France, et les statistiques nationales et départementales de population
-    * 1-processed-data : fichiers nécessaires pour le code eqis-code.R :
-      (i) CONTOURS-IRIS : permet de charger les fonds de carte IRIS nécessaires pour la spatialisation
-      (ii) INSEE : permet de charger les données INSEE nécessaires pour les statistiques de population
-      (iii) SHERPA : permet d'obtenir les prédictions de concentration pour chaque scénario.
-    * 2-output-data : contient les fichiers de sortie du code code-pop : donnees_iris.csv et donnees_iris.shp. 
+2.3.1. Les données brutes
+--
+Ces données sont issues de la même projection parue en 2021 : https://www.insee.fr/fr/statistiques/5894886?sommaire=5760764
+- La liste de la population par IRIS en 2019 : https://www.insee.fr/fr/statistiques/6543200
+- La liste de la population par département par tranche d’âge de cinq ans de 2019 à 2050 : https://www.insee.fr/fr/statistiques/7747107?sommaire=6652140
+- La liste de la population de chaque âge sur le territoire national de 2019 à 2050 : https://www.insee.fr/fr/statistiques/5894093?sommaire=5760764
+- La liste du nombre de morts de chaque âge sur le territoire national de 2019 à 2050 : https://www.insee.fr/fr/statistiques/5894093?sommaire=5760764
+- Le fichier CONTOURS_IRIS qui contient la liste des coordonnées des IRIS en 2019 : https://geoservices.ign.fr/contoursiris.
+
+2.3.2. Reformater correctement les fichiers
+--
+Les fichiers bruts sont dans le dossier 0-raw-data et les fichiers utilisés se trouvent dans le dossier 1-processed-data
+•	donnees_age_femmes et donnees_age_hommes sont issues de la liste de la population de chaque âge sur le territoire national de 2019 à 2050.
+•	donnees_deces_hf est issue issues de la liste du nombre de morts de chaque âge sur le territoire national de 2019 à 2050.
+•	donnees_iris est issue de la liste de la population par IRIS en 2019.
+•	donnees_projections est issue de la liste de la population par département par tranche d’âge de cinq ans de 2019 à 2050.
+•	CONTOURS_IRIS est issue de CONTOURS_IRIS. 
+•	num_depart contient la liste des départements et des numéros de départements associés.
+
+2.3.3 Les fonctions dans le code R code-pop.R
+--
+•	geometries <- function(path_iris, path_depart, path_contours)
+-	geometries fusionne les tableaux issus de CONTOURS_IRIS, donnees_iris et num_depart. 
+-	On obtient un Simple Feature Collection donnees_geom avec : age, dep_name, dep_cod, region_name, region_cod, com_name, com_cod, iris_name, iris_cod, POP_2019_IRIS_TotAge, geometry (polygone représentant l’IRIS) et aire_m2 (air de l’IRIS).
+
+•	age_nat <- function(path_age_femmes, path_age_hommes)
+-	age_nat additionne les âges de donnees_age_femmes et donnees_age_homme pour obtenir la liste de la population de chaque âge sur le territoire national de 2019 à 2050 indifféremment du sexe.
+-	age_nat supprime les âges supérieurs à 99 ans et regroupe toutes les personnes âgées de 99 ans ou plus au sein de l’âge 99.
+-	On obtient un dataframe age_hf contenant l’âge age et POP_2019_NAT jusqu’à POP_2050_NAT les colonnes donnant la liste des personnes de chaque âge sur le territoire national.
+
+•	decomposition_age <- function(age_hf)
+-	decomposition_age crée des fractions FRAC_2019_agesurtrage jusqu’à FRAC_2050_agesurtrage telle que pour chaque âge : FRAC_2019_agesurtrage = Nombre de personne de l’âge n / Nombre de personne de la classe d’âge de 5 ans comprenant n.
+-	On obtient le dataframe perc_hf qui contient les colonnes de age_hf, les fractions pour chaque année, et une colonne tranche_age qui explicite la tranche d’âge de 5 considérée.
+
+•	recense <- function(path_proj, perc_hf)
+-	recense renomme correctement les départements mal orthographié
+-	La fonction fusionne le dataframe perc_hf et les données issues de donnees_projections pour les mêmes valeurs de tranche_age (tranche d’âge de 5 ans).
+-	On obtient un dataframe donnees_proj qui contient les colonnes de age_hf, ainsi que les colonnes POP_2019_DEP_TrAge jusqu’à POP_2050_DEP_TrAge issues de donnees_projections.
+
+•	desagreg <- function(donnees_geom, donnees_proj)
+-	desagreg fusionne le Simple feature collection donnees_geom et donnees_proj pour des valeurs communes du code des IRIS.
+-	desagreg calcule POP_2019_IRIS tel que :
+POP_2019_IRIS = POP_2019_IRIS_TotAge * POP_2019_DEP_TrAge * FRAC_2019_agesurtrage / POP_2019_DEP_TotAge
+-	desagreg calcule POP_2020_IRIS à POP_2050_IRIS tels que :
+POP_20xx_IRIS = POP_2019_IRIS * POP_20xx_DEP_TrAge * FRAC_20xx_agesurtrage / (POP_2019_DEP_TrAge * FRAC_2019_agesurtrage)
+-	On obtient un Simple feature collection donnees_insee avec les colonnes de donnees_geom et donnees_proj, ainsi que les valeurs de population par âge par année à l’IRIS POP_2019_IRIS à POP_2050_IRIS. 
+
+•	dens <- function(donnees_insee)
+-	dens calcule les densités de population par âge par année à l’IRIS telle que :
+DENS_20xx_IRIS = POP_20xx_IRIS / aire_m2
+-	On obtient un Simple feature collection donnees_dens avec les colonnes de donnees_insee ainsi que les densités de population par âge par année à l’IRIS DENS_2019_IRIS à DENS_2050_IRIS.
+
+•	mortalite <- function(donnees_dens, path_mortalite_hf)
+-	mortalite extrait les données de mortalité présentes dans le fichier donnees_deces_hf puis les fusionne avec le Simple feature collection donnees_dens sous le nom MORT_2019_NAT à MORT_2050_NAT (données de décès nationaux pour chaque âge).
+-	mortalite calcule les données de mortalité par âge à l’IRIS en faisant un produit en croix : MORT_20xx_IRIS = MORT_20xx_NAT * POP_20xx_IRIS / POP_20xx_NAT
+-	On obtient un Simple feature collection donnees_finales avec les mêmes colonnes que donnees_dens et en plus les colonnes MORT_2019_NAT à MORT_2050_NAT et MORT_2019_IRIS à MORT_2050_IRIS.
+
+•	export_data_csv <- function(donnees_finales, path, title_csv)
+Exporte un Simple Feature Collection en fichier csv (sans la colonne geometry)
+
+•	export_data_shp <- function(donnees_finales, path_fichier_shp, title_shp)
+Exporte un Simple Feature Collection en fichier shp (pour pouvoir le lire avec la colonne geometry)
+
+2.3.4. Les hypothèses faites dans ce calcul 
+--
+- Au sein d’une tranche d’âge de 5 ans dans un département en 20xx, la contribution de chaque âge au sein de la tranche d’âge est homogène à l’échelle nationale.
+- Au sein d’un IRIS en 2019, la proportion de la population de chaque âge est homogène à l’échelle départementale.
+- Au sein d’un IRIS en 20xx, l’évolution de la population à l’échelle départementale en 20xx est proportionnelle à l’évolution de la population à l’échelle de l’IRIS.
+- En 20xx, la mortalité à l’échelle d’un IRIS est proportionnelle à la mortalité nationale en 20xx.
+
+
+
+2.4. Le code code-eqis.R : permet de calculer l'EQIS à partir des données d'exposition (SHERPA) et des données de démographie (INSEE)
+--
+2.4.1. Les données brutes
+--
+Les données utilisées sont les données de sortie du code code-pop.R et de la partie python
+- Dans le fichier output-data, le fichier donnees-shp donne les coordonnées géographiques des IRIS, la population de plus de 30 ans présente dans ces IRIS en 2019, 2030 et 2050, ainsi que le nombre de morts de plus de 30 ans dans ces IRIS en 2019, 2030, 2050 (= fichier de sortie du code-pop.R).
+- Dans le fichier processed-data, le fichier SHERPA recense les sorties de la partie Python, ce qui permet d'avoir les concentrations de référence en 2019 en France pour les PM2.5 et les NO2, ainsi les concentrations en PM2.5 et NO2 pour chaque scénario (s1 à s4) en 2030 et 2050.
+
+2.4.2. Les fonctions dans le code R code-eqis.R
+--
+•	coordo_sherpa <- function(sc, pol, annee)
+- Pour le scénario sc, le pollant pol et l'année annee, coordo_sherpa trouve le fichier de modélisation python correspondant
+- Renvoie un Simple Feature collection conc_points contenant les coordonnées de points, la concentration conc mesurée et la différence de concentration par rapport à 2019 delta_conc
+
+•	moy_conc <- function(conc_points)
+- Pour le Simple Feature Collection conc_points, renvoie la moyenne sur le territoire national de la concentration conc mesurée
+
+•	grid <- function(conc_points, deg)
+- Pour le Simple Feature Collection conc_points et un degré deg, grid renvoie un Simple Feature Collection result dans lequel :
+- Les points de conc_points sont conservés et sont ajoutés des points supplémentaires espacés d'une distance deg
+- Les concentrations conc et delta_conc sont estimées pour les points ajoutés en interpolant les points de conc_points
+- Cette fonction permet donc d'obtenir un Simple Feature Collection où les concentrations sont mesurées à une échelle plus fine que celle calculée initialement par SHERPA
+
+•	graphe <- function(conc_interp_sf, conc_points)
+- Pour les deux Simple Feature Collection conc_interp_sf et conc_points, graphe trace une image dans laquelle :
+- Les valeurs conc de conc_interp_sf sont représentées en gradient de couleur
+- Les points de conc_points sont représentés en rouge
+
+•	export_data_shp <- function(donnees_shp, path_fichier_shp, title_shp)
+- Cette fonction permet d'exporter le Simple Collection Feature donnees_shp en shapefile situé au chemin path_fichier_shp et ayant pour titre title_shp
+
+•	exposition <- function(donnees_exportees, conc_interp_sf)
+- donnees_exportees est un Simple Collection Feature contenant une liste de polygones représentant les IRIS en France. il y a également d'autres colonnes, notamment iriscod qui attribue un code unique à chaque polygone
+- conc_interp_sf est un Simple Collection Feature contenant une liste de points et pour chaque point une valeur numérique conc et delta_conc
+- La fonction crée un Simple Feature Collection result identique à donnees_exportees avec deux colonnes vides conc et deltaconc
+- pour chaque iriscod, la fonction identifie tous les points de conc_interp_sf présents dans le polygone associé à iriscod
+- pour chaque iriscod, la fonction remplace la valeur conc et deltaconc par la moyenne de conc et delta_conc des points de conc_interp_sf qui sont dans le polygone
+
+•	mortalite_evitee_iris <- function(donnees_expo, pol)
+- Pour le polluant pol et l'exposition de chaque IRIS donnée par deltaconc dans le Simple Collection Feature donnees_expo, mortalite_evitee_iris calcule la mortalité évitée dans chaque IRIS associée à l'exposition au polluant pol
+
+•	mortalite_evitee_nat <- function(donnees_mixtes, annee, pol)
+- Pour le polluant pol et la mortalité évitée dans chaque IRIS associée à l'exposition au polluant pol présente dans la colonne mortpolannee, la fonction mortalite_evitee_nat réaggrège la mortalité à l'échelle nationale
 
 
