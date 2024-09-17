@@ -66,7 +66,7 @@ Le jupyter notebook sherpa-model.ipynb permet de produire les sorties par scéna
 
 2.3.1. Les données brutes
 --
-Ces données sont issues de la même projection parue en 2021 : https://www.insee.fr/fr/statistiques/5894886?sommaire=5760764
+Ces données sont issues de la même projection parue en 2021 (scénario central) : https://www.insee.fr/fr/statistiques/5894886?sommaire=5760764
 - La liste de la population par IRIS en 2019 : https://www.insee.fr/fr/statistiques/6543200
 - La liste de la population par département par tranche d’âge de cinq ans de 2019 à 2050 : https://www.insee.fr/fr/statistiques/7747107?sommaire=6652140
 - La liste de la population de chaque âge sur le territoire national de 2019 à 2050 : https://www.insee.fr/fr/statistiques/5894093?sommaire=5760764
