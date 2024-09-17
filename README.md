@@ -31,7 +31,7 @@ Transition(s) (https://librairie.ademe.fr/ged/6531/transitions2050-rapport-compr
 (s1 : scénario le plus sobre, s4 : scénario le plus technologique).
 Le feuilleton air permet de prédire les émissions suivantes :
 - Les émissions de NH3 dans le secteur agricole pour s2, s3, s4 (GNFR11 et 12 agrégés).
-- Les émissions de NOx,COVNM, PM25, PM10, SO2 du secteur résidentiel pour s1, s2, s3, s4 (GNFR3).
+- Les émissions de NOx,COVNM, PM25, PM10, SO2 du secteur résidentiel pour s1, s2, s3, s4 (GNFR3). Ces émissions ne prennent pas en compte les condensats, tandis que SHERPA prend en compte les condensats dans sa méthodologie de calcul.
 - Les émissions de NOx,COVNM, PM25, PM10, SO2 du secteur transport routier pour s1, s2, s3, s4 (GNFR6).
 - Les émissions de NOx,COVNM, PM25, PM10, SO2 du secteur transport maritime pour s1, s2, s3, s4 (GNFR7).
 - Les émissions de NOx,COVNM, PM25, PM10, SO2 du secteur transport aérien pour s1, s2, s3, s4 (GNFR8).
@@ -149,6 +149,7 @@ Exporte un Simple Feature Collection en fichier shp (pour pouvoir le lire avec l
 Les données utilisées sont les données de sortie du code code-pop.R et de la partie python
 - Dans le fichier output-data, le fichier donnees-shp donne les coordonnées géographiques des IRIS, la population de plus de 30 ans présente dans ces IRIS en 2019, 2030 et 2050, ainsi que le nombre de morts de plus de 30 ans dans ces IRIS en 2019, 2030, 2050 (= fichier de sortie du code-pop.R).
 - Dans le fichier processed-data, le fichier SHERPA recense les sorties de la partie Python, ce qui permet d'avoir les concentrations de référence en 2019 en France pour les PM2.5 et les NO2, ainsi les concentrations en PM2.5 et NO2 pour chaque scénario (s1 à s4) en 2030 et 2050.
+- La cartothèque de l'INERIS est utilisée pour corriger les données de sortie de SHERPA : https://www.ineris.fr/fr/recherche-appui/risques-chroniques/mesure-prevision-qualite-air/qualite-air-france-metropolitaine
 
 2.4.2. Les fonctions dans le code R code-eqis.R
 --
