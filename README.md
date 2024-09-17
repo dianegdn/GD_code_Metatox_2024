@@ -76,11 +76,17 @@ Ces données sont issues de la même projection parue en 2021 : https://www.inse
 2.3.2. Reformater correctement les fichiers
 --
 Les fichiers bruts sont dans le dossier 0-raw-data et les fichiers utilisés se trouvent dans le dossier 1-processed-data
+
 •	donnees_age_femmes et donnees_age_hommes sont issues de la liste de la population de chaque âge sur le territoire national de 2019 à 2050.
+
 •	donnees_deces_hf est issue issues de la liste du nombre de morts de chaque âge sur le territoire national de 2019 à 2050.
+
 •	donnees_iris est issue de la liste de la population par IRIS en 2019.
+
 •	donnees_projections est issue de la liste de la population par département par tranche d’âge de cinq ans de 2019 à 2050.
+
 •	CONTOURS_IRIS est issue de CONTOURS_IRIS. 
+
 •	num_depart contient la liste des départements et des numéros de départements associés.
 
 2.3.3 Les fonctions dans le code R code-pop.R
